@@ -10,27 +10,25 @@ $arUserData = [
     "password" => ""
 ];
 
-$arValidationErrors = [];
+$arValidationMessages = [];
 
 if (isset($_POST["enter"])) {
     $arUserData = postDataHandler();
 
-    $arValidationErrors = handleValidation($arUserData);
+    $arValidationMessages = handleValidation($arUserData);
 
-    if (isValid($arValidationErrors)) {
-        $host = $_SERVER['HTTP_HOST'];
-        $uri = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-        $extra = 'authError.php';
+    if (isValid($arValidationMessages)) {
+        $extra = "authError.php";
 
         for ($i = 0; $i < count($arDatabaseData); $i++) {
             if ($arUserData["login"] === $arDatabaseData[$i]["login"] && $arUserData["password"] === $arDatabaseData[$i]["password"]) {
-                $extra = 'authSuccess.php';
+                $extra = "authSuccess.php";
                 $_SESSION["login"] = $arUserData["login"];
                 break;
             }
         }
 
-        header("Location: http://$host$uri/$extra");
+        redirect($extra);
 
         exit;
     }
@@ -48,19 +46,19 @@ if (isset($_POST["enter"])) {
 </head>
 
 <body class="content">
-    <form class="content__form" method="post">
+    <form class="content__info" method="post">
         <h1 class="content__header">Авторизация</h1>
 
         <input class="content__input" type="text" name="login" value="<?= $arUserData["login"] ?>" placeholder="Логин" required />
         <?php
-        $arLoginValidationResult = handleError("login", $arValidationErrors);
-        echo "<p class='content__feedback $arLoginValidationResult[1]'>$arLoginValidationResult[0]</p>";
+        $arLoginValidationResult = handleError("login", $arValidationMessages);
+        echo "<p class='content__feedback content__feedback_type_" . $arLoginValidationResult["type"] . "'>" . $arLoginValidationResult["message"] . "</p>";
         ?>
 
         <input class="content__input" type="password" name="password" value="<?= $arUserData["password"] ?>" placeholder="********" required />
         <?php
-        $arPasswordValidationResult = handleError("password", $arValidationErrors);
-        echo "<p class='content__feedback $arPasswordValidationResult[1]'>$arPasswordValidationResult[0]</p>";
+        $arPasswordValidationResult = handleError("password", $arValidationMessages);
+        echo "<p class='content__feedback content__feedback_type_" . $arPasswordValidationResult["type"] . "'>" . $arPasswordValidationResult["message"] . "</p>";
         ?>
 
         <button class="content__button" type="submit" name="enter">Войти</button>

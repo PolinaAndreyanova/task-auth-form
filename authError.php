@@ -9,13 +9,13 @@
 </head>
 
 <body class="content">
-    <form class="content__form" method="post" action="index.php">
+    <div class="content__info">
         <h1 class="content__header">Ошибка !</h1>
 
         <p>Ошибка авторизации.</p>
 
-        <button class="content__button" type="submit" name="main">На главную</button>
-    </form>
+        <a class="content__button content__button_type_link" href="./index.php">На главную</a>
+    </div>
 </body>
 
 </html>

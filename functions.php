@@ -1,4 +1,12 @@
 <?php
+function redirect(string $extra): void
+{
+    $host = $_SERVER["HTTP_HOST"];
+    $uri = rtrim(dirname($_SERVER["PHP_SELF"]), "/\\");
+    
+    header("Location: http://$host$uri/$extra");
+}
+
 function postDataHandler(): array
 {
     return [
@@ -10,7 +18,7 @@ function postDataHandler(): array
 function databaseDataHandler(): array {
     $arDatabaseData = [];
 
-    $fData = fopen("data.csv", "rt") or Die("Ошибка!");
+    $fData = fopen("data.csv", "rt") or die("Ошибка!");
 
     for ($i = 0; $arData = fgetcsv($fData, 100); $i++) {
         $arDatabaseData[] = [
@@ -48,21 +56,33 @@ function validatePassword(string $password): bool
 
 function handleValidation(array $arUserData): array
 {
-    $arValidationErrors = [];
+    $arValidationMessages = [];
 
     if (!validateLogin($arUserData["login"])) {
-        $arValidationErrors["login"] = ["Логин должен содержать не менее 6 символов, символами могут быть только латинские буквы, цифры и нижнее подчеркивание, при этом первым символом может быть ТОЛЬКО буква", "content__feedback_type_error"];
+        $arValidationMessages["login"] = [
+            "message" => "Логин должен содержать не менее 6 символов, символами могут быть только латинские буквы, цифры и нижнее подчеркивание, при этом первым символом может быть ТОЛЬКО буква",
+            "type" => "error"
+        ];
     } else {
-        $arValidationErrors["login"] = ["Валидация пройдена успешно", "content__feedback_type_success"];
+        $arValidationMessages["login"] = [
+            "message" => "Валидация пройдена успешно",
+            "type" => "success"
+        ];
     }
 
     if (!validatePassword($arUserData["password"])) {
-        $arValidationErrors["password"] = ["Пароль должен содержать не менее 8 символов: латинские буквы, цифры, символы -, _, *, $, |", "content__feedback_type_error"];
+        $arValidationMessages["password"] = [
+            "message" => "Пароль должен содержать не менее 8 символов: латинские буквы, цифры, символы -, _, *, $, |",
+            "type" => "error"
+        ];
     } else {
-        $arValidationErrors["password"] = ["Валидация пройдена успешно", "content__feedback_type_success"];
+        $arValidationMessages["password"] = [
+            "message" => "Валидация пройдена успешно",
+            "type" => "success"
+        ];
     }
 
-    return $arValidationErrors;
+    return $arValidationMessages;
 }
 
 function handleError(string $key, array $arValidationErrors): array
@@ -70,15 +90,19 @@ function handleError(string $key, array $arValidationErrors): array
     if (array_key_exists($key, $arValidationErrors)) { 
         return $arValidationErrors[$key];
     }
-    return ["", ""];
+
+    return [
+        "type" => "",
+        "message" => ""
+    ];
 }
 
-function isValid(array $arValidationErrors): bool
+function isValid(array $arValidationMessages): bool
 {
     $isOk = true;
 
-    foreach ($arValidationErrors as $key => $value) {
-        if ($value[0] !== "Валидация пройдена успешно") {
+    foreach ($arValidationMessages as $key => $value) {
+        if ($value["type"] !== "success") {
             $isOk = false;
             break;
         }

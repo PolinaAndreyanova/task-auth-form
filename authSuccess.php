@@ -1,17 +1,14 @@
 <?php
 session_start();
 
+include_once("functions.php");
+
 if (isset($_POST["exit"])) {
     $_SESSION = [];
     unset($_COOKIE[session_name()]);
     session_destroy();
-
-    $host = $_SERVER['HTTP_HOST'];
-    $uri = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-
-    $extra = 'index.php';
-
-    header("Location: http://$host$uri/$extra");
+    
+    redirect("index.php");
 
     exit;
 }
@@ -27,7 +24,7 @@ if (isset($_POST["exit"])) {
 </head>
 
 <body class="content">
-    <form class="content__form" method="post">
+    <form class="content__info" method="post">
         <h1 class="content__header">Здравствуйте, <?= $_SESSION["login"] ?> !</h1>
 
         <p>Вы успешно авторизованы.</p>

@@ -8,7 +8,7 @@
     background-color: rgba(96, 143, 145, 0.75);
 }
 
-.content__form {
+.content__info {
     margin: 25vh auto 30px;
     padding: 5px;
     box-sizing: border-box;
@@ -39,6 +39,12 @@
     color: #ffffff;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.content__button_type_link {
+    text-decoration: none;
+    text-align: center;
+    line-height: 40px;
 }
 
 .content__feedback {
